@@ -50,9 +50,9 @@ If you use MMC-Topology-Circuitikz in your research, academic works, or educatio
 
 ```bibtex
 @misc{MMC_Topology_Circuitikz,
-  author = {Your Name},
+  author = {Kosei Shinoda},
   title = {{MMC-Topology-Circuitikz}: A LaTeX Document for Generating Modular Multilevel Converter Topology Diagrams},
-  year = {Year of Publication},
+  year = {2014},
   publisher = {GitHub},
   journal = {GitHub repository},
   howpublished = {\url{https://github.com/koseishinoda/MMC-Topology-Circuitikz}}

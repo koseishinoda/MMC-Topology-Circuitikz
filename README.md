@@ -1,7 +1,7 @@
 # MMC-Topology-Circuitikz
 LaTeX code for generating Modular Multilevel Converter (MMC) topology diagrams using Circuitikz
 
-![Figre]([MMC-Topology-Circuitikz.png](https://github.com/koseishinoda/MMC-Topology-Circuitikz/blob/main/MMC-Topology-Circuitikz.png)")
+![MMC Topology Diagram](/MMC-Topology-Circuitikz.png "MMC-Topology-Circuitikz")
 
 ## Overview
 

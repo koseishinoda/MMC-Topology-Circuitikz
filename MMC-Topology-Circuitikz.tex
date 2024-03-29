@@ -1,0 +1,226 @@
+\documentclass{standalone}
+\usepackage[siunitx, RPvoltages, american, cute inductors, straight voltages]{circuitikz}
+\usepackage{xparse}
+\usepackage{tikz}
+\usepackage{ifthen}
+
+\makeatletter
+\ctikzset{current arrow color/.initial=black}% create key
+\tikzset{every text node part/.style={align=center}}
+
+%Ref
+%dahsed line
+%https://tex.stackexchange.com/questions/45275/tikz-get-values-for-predefined-dash-patterns
+
+
+\begin{document}
+ 
+\begin{circuitikz}
+
+\NewDocumentCommand{\varr}{O{blue} D(){below} m m}{% color, where, name, label
+    \draw [thin, #1, -Triangle,] (#3-Vfrom) .. controls (#3-Vcont1) and (#3-Vcont2).. (#3-Vto) node [midway, sloped, #2] {#4};
+    }
+
+% %Figure dimensions
+% \def\figHt{25}
+% \def\figWd{25}
+% %Comment next three lines once typesetting finished
+% \draw[step=1,very thin, black!20] (-0.5,-0.5) grid (\figWd,\figHt);
+% \foreach \x in {0,...,\figWd} {\node [anchor=north] at (\x,-0.5) {\x};}
+% \foreach \y in {0,...,\figHt} {\node [anchor=east] at (-0.5,\y) {\y};}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\ctikzset{resistors/scale=0.8}
+
+\tikzset{
+    sm/.style={
+        draw,
+        rectangle,
+        inner sep=0,
+        minimum width=1.1cm,
+        %maximum width=1.3cm,
+        minimum height=0.5cm,
+    }
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand\mySM[3]{
+    % Create a node with the given style and label
+    \node[sm] (#1) at ($#2+(0.3+0.55, 0)$) {\small #3};
+    % Draw the connections to the left
+    \draw ($(#1.west)+(0,+0.1)$) -- ++(-0.3,0) coordinate(#1-in);
+    \draw ($(#1.west)+(0,-0.1)$) -- ++(-0.3,0) coordinate(#1-out);
+}
+\newcommand\myPtoGV[2]{
+    \node (start) at (#1) {};
+    \node[trarrow, rotate=+90, anchor=tip] at (start) {};
+    \draw (start) -- ++(0,-0.5) to [short, l=#2] ++(0,-0.1) node[ground]{}; 
+}
+
+\newcommand\myPtoGVinv[2]{
+    \node (start) at (#1) {};
+    \node[trarrow, rotate=-90, anchor=tip] at (start) {};
+    \draw (start) -- ++(0,+0.5) to [short, l_=#2] ++(0,+0.1) node[ground, rotate=180]{}; 
+}
+
+\newcommand\myPtoNV[3]{
+    \node (start) at (#1) {};
+    \node[trarrow, rotate=+90, anchor=tip] at (start) {};
+    \draw (start) -- ($(#2)+(0,+0.5)$) to [short, -o, l=#3] (#2); 
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\ctikzset{resistors/scale=0.64}
+\ctikzset{resistors/thickness=1}
+\ctikzset{inductors/scale=0.8}
+\ctikzset{inductors/thickness=1}
+
+%\def\legtop{12}
+%\def\legbot{0}
+
+%Leg phase a 
+\newcommand\nAdjust{0}
+
+
+\NewDocumentCommand{\drawPhase}{m m} {% 1: x position, 2: phase label
+
+
+    \ifthenelse{\equal{#2}{a}}{\renewcommand\nAdjust{+0.6}}{} % Adjust for phase a
+    \ifthenelse{\equal{#2}{b}}{\renewcommand\nAdjust{+0.0}}{} % Adjust for phase b
+    \ifthenelse{\equal{#2}{c}}{\renewcommand\nAdjust{-0.6}}{} % Adjust for phase c
+
+
+    %Arm u
+
+    \path (#1, 7+\nAdjust) coordinate (n#2);
+    \draw (n#2) to [short, *-] ++ (0,+0.5-\nAdjust)
+    to [L, l_=$L_{arm}$, mirror] ++(0,+1.2)
+    to [R, l_=$R_{arm}$] ++(0,+0.9)
+    to [short] ++(0, +0.2) coordinate (n#2SMu);
+
+    \mySM{SM1#2u}{($(n#2SMu)+(0,+1.55)$)}{$SM_{1#2}^u$}
+    \mySM{SM2#2u}{($(n#2SMu)+(0,+0.90)$)}{$SM_{2#2}^u$}
+    \mySM{SMN#2u}{($(n#2SMu)+(0,+0.10)$)}{$SM_{N#2}^u$}
+
+    \draw (SM1#2u-in) to [short, i<=$i_{#2}^{u}$, -*] ++(0, +0.9) coordinate (leg_#2_top);
+    \draw (SM1#2u-out) to (SM2#2u-in);
+    \draw [densely dashed] (SM2#2u-out) to (SMN#2u-in);
+
+    \node (vm#2u_top) at ($(SM1#2u)+(-1.1,+0.4)$) {};
+    \node (vm#2u_bot) at ($(SMN#2u)+(-1.1,-0.4)$) {};
+    \draw(vm#2u_top) to [open, v=$u_{m#2}^u$] (vm#2u_bot);
+
+    %Arm l
+
+    \draw (n#2) to [short, *-] ++ (0,-0.5-\nAdjust)
+    to [L, l=$L_{arm}$] ++(0,-1.2)
+    to [R, l=$R_{arm}$] ++(0,-0.9)
+    to [short] ++(0, -0.2) coordinate (n#2SMl);
+
+    \mySM{SM1#2l}{($(n#2SMl)+(0,-0.10)$)}{$SM_{1#2}^l$}
+    \mySM{SM2#2l}{($(n#2SMl)+(0,-0.75)$)}{$SM_{2#2}^l$}
+    \mySM{SMN#2l}{($(n#2SMl)+(0,-1.55)$)}{$SM_{N#2}^l$}
+
+    \draw (SM1#2l-out) to (SM2#2l-in);
+    \draw [densely dashed] (SM2#2l-out) to (SMN#2l-in);
+    \draw (SMN#2l-out) to [short, i_=$i_{#2}^{l}$, -*] ++(0,-0.9) coordinate (leg_#2_bot);
+
+    \node (vm#2l_top) at ($(SM1#2l)+(-1.1,+0.3)$) {};
+    \node (vm#2l_bot) at ($(SMN#2l)+(-1.1,-0.3)$) {};
+    \draw(vm#2l_top) to [open, v=$u_{m#2}^l$] (vm#2l_bot);
+
+}
+
+\def\phasecenter{15}
+
+% Draw the MMC legs
+\drawPhase{\phasecenter-2.5}{a}
+\drawPhase{\phasecenter}{b}
+\drawPhase{\phasecenter+2.5}{c}
+
+% AC transformer
+% Set the transformer size
+\ctikzset{bipoles/oosourcetrans/width=1.0824}  % default is 0.8
+\ctikzset{bipoles/oosourcetrans/height=1.0824} % default is 0.8
+
+
+% Draw the transformer
+\def\xshifticonv{-1.2}
+\draw (nb) to [short] ++(-2.5, 0) coordinate (nnb)
+to [short, i=$i_{b}^{con}$] ++(\xshifticonv, 0) 
+to [short] ++(-1.8, 0) to[oosourcetrans, name=TransAC, prim=wye, sec=delta, invert] ++(-2.0,0);
+
+% Define the offset for the three-phase lines
+\def\phaseOffset{0.1}
+
+% AC voltage source to the left
+\draw (TransAC.left) ++(-1.5,0.0) node[vsourcesinshape, rotate=90, scale=1.2] (Vac) {} ++(-1.0,0) coordinate (leftEnd);
+\node[above] at (Vac.east) {$u^{ac}$};  % Label "Vac" above the AC voltage source
+
+% Three-phase connection from the AC voltage source to the transformer
+% Phase 1
+\draw ([yshift=\phaseOffset cm]TransAC.left) to[short, -, i=$ $] ([yshift=\phaseOffset cm]Vac.south);
+% Phase 2 (middle, no offset)
+\draw (TransAC.left) to[short, -, i=$ $] (Vac.south);
+% Phase 3
+\draw ([yshift=-\phaseOffset cm]TransAC.left) to[short, -, i=$ $] ([yshift=-\phaseOffset cm]Vac.south);
+
+\node at ($(Vac.south)!0.5!(TransAC.left)+(0,0.4)$) {$i^{ac}$};
+
+
+\draw (na) 
+to [short, i=$i_{a}^{con}$] ++(\xshifticonv, 0) 
+to [short] ++(-1.8, 0) to [short]($(TransAC.centersec)!1!+60:(TransAC.right)$);
+
+\draw (nc) to [short] ++(-5.0, 0) coordinate (nnc)
+to [short, i=$i_{c}^{con}$] ++(\xshifticonv, 0) 
+to [short] ++(-1.8, 0) to [short]($(TransAC.centersec)!1!-60:(TransAC.right)$); 
+
+\draw ($(TransAC.centerprim)+(-0.15,0.0)$) to [short] ++(-135:0.5) node[ground]{};
+
+\node (vacon_s)[trarrow, rotate=+90, anchor=tip] at ($( na)+(-2.8+0.0,+0.0)$){};
+\draw (vacon_s) to [short, -, l=$v_{an}^{con}$] ++(0.0,-0.5) to [short, -*] ++(0.0,-1.5) coordinate (VNaCon); 
+
+\node (vbcon_s)[trarrow, rotate=+90, anchor=tip] at ($(nnb)+(-2.8+0.5,+0.0)$){};
+\draw (vbcon_s) to [short, -, l=$v_{bn}^{con}$] ++(0.0,-0.5) to [short, -*] ($(VNaCon)+(0.5,0.0)$) coordinate (VNbCon); 
+
+\node (vccon_s)[trarrow, rotate=+90, anchor=tip] at ($(nnc)+(-2.8+1.0,+0.0)$){};
+\draw (vccon_s) to [short, -, l=$v_{cn}^{con}$] ++(0.0,-0.5) to [short, -*] ($(VNbCon)+(0.5,0.0)$) coordinate (VNcCon); 
+
+%draw horizontal line just below
+\draw ($(VNaCon)+(0,0)$) to [short]($(VNcCon)+(0,0)$);
+
+\myPtoGV{VNbCon}{$v_{n}^{con}$}
+
+ 
+
+% DC side of the converter
+% positive pole
+\draw (leg_a_top) to [short] (leg_c_top);
+\draw (leg_c_top) to [short, -] ++(0.5, 0)
+to [L,l=$L^{dc}$] ++(1.0,0)
+to [short] ++(0.5, 0)
+to [short, -o, i=$i^{dc}$] ++(1.0, 0) 
+ node [right] {} coordinate (PoC_DCp);
+\node (v_p_dc) at ($(PoC_DCp)+(-1.0,+0.0)$) {};
+\myPtoGV{v_p_dc}{$v_{p}^{dc}$}
+
+% negative pole
+\draw (leg_a_bot) to [short] (leg_c_bot);
+\draw (leg_c_bot) to [short, -] ++(0.5, 0)
+%to [L,l=$L_{n}^{dc}$] ++(2,0)
+to [short] ++(0.5, 0)
+to [short, -o] ++(2.0, 0)
+ node [right] {} coordinate (PoC_DCn);
+\node (v_n_dc) at ($(PoC_DCn)+(-1.0,+0.0)$) {};
+\myPtoGVinv{v_n_dc}{$v_{n}^{dc}$}
+
+%pole to pole voltage
+
+\draw ($(PoC_DCp)+(0,1.5)$) to [open, v^=$u^{dc}$] ($(PoC_DCn)+(0,-1.5)$);
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\end{circuitikz}
+  
+\end{document}

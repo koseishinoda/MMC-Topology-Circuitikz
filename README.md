@@ -48,6 +48,7 @@ We are eager to hear from you! If you have any feedback, suggestions for improve
 
 If you use MMC-Topology-Circuitikz in your research, academic works, or educational materials, we kindly ask you to cite it appropriately. Below is a suggested citation format in BibTeX, which you can include in your LaTeX documents:
 
+```bibtex
 @misc{MMC_Topology_Circuitikz,
   author = {Your Name},
   title = {{MMC-Topology-Circuitikz}: A LaTeX Document for Generating Modular Multilevel Converter Topology Diagrams},
@@ -56,4 +57,5 @@ If you use MMC-Topology-Circuitikz in your research, academic works, or educatio
   journal = {GitHub repository},
   howpublished = {\url{https://github.com/koseishinoda/MMC-Topology-Circuitikz}}
 }
+
 

@@ -43,3 +43,17 @@ Your contributions are welcome! If you have suggestions for improving this docum
 
 ## Feedback and Suggestions
 We are eager to hear from you! If you have any feedback, suggestions for improvement, or feature requests, please open an issue in this repository. Your input is invaluable in making MMC-Topology-Circuitikz more useful and effective for everyone in the community.
+
+## How to Cite
+
+If you use MMC-Topology-Circuitikz in your research, academic works, or educational materials, we kindly ask you to cite it appropriately. Below is a suggested citation format in BibTeX, which you can include in your LaTeX documents:
+
+@misc{MMC_Topology_Circuitikz,
+  author = {Your Name},
+  title = {{MMC-Topology-Circuitikz}: A LaTeX Document for Generating Modular Multilevel Converter Topology Diagrams},
+  year = {Year of Publication},
+  publisher = {GitHub},
+  journal = {GitHub repository},
+  howpublished = {\url{https://github.com/koseishinoda/MMC-Topology-Circuitikz}}
+}
+
